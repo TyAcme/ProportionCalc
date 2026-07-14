@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Proportion Calculator</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2064%2064%22%3E%20%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2214%22%20fill%3D%22%23ffffff%22/%3E%20%3Ctext%20x%3D%2232%22%20y%3D%2226%22%20font-family%3D%22Libre%20Franklin%2C%20Arial%2C%20Helvetica%2C%20sans-serif%22%20font-weight%3D%22700%22%20font-size%3D%2232%22%20fill%3D%22%23000000%22%20text-anchor%3D%22middle%22%3Ea%3C/text%3E%20%3Cline%20x1%3D%2211%22%20y1%3D%2233%22%20x2%3D%2253%22%20y2%3D%2233%22%20stroke%3D%22%23000000%22%20stroke-width%3D%224%22%20stroke-linecap%3D%22round%22/%3E%20%3Ctext%20x%3D%2232%22%20y%3D%2262%22%20font-family%3D%22Libre%20Franklin%2C%20Arial%2C%20Helvetica%2C%20sans-serif%22%20font-weight%3D%22700%22%20font-size%3D%2232%22%20fill%3D%22%23000000%22%20text-anchor%3D%22middle%22%3Eb%3C/text%3E%20%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:ital,wght@0,400;0,500;0,700;1,400;1,500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --page:#eef1f5;
+    --card:#ffffff;
+    --ink:#1b2733;
+    --ink-soft:#5b6772;
+    --line:#e2e6eb;
+    --navy:#16325c;
+    --blue:#2f6fed;
+    --blue-soft:#eaf1ff;
+    --solved-bg:#fff8e6;
+    --solved-border:#f0c869;
+    --good:#1a9e5c;
+    --bad:#d64545;
+    --radius:14px;
+  }
+  *{ box-sizing:border-box; }
+  html{
+    overflow-y:scroll;
+    scrollbar-gutter:stable;
+  }
+  body{
+    margin:0;
+    background:var(--page);
+    font-family:"Libre Franklin",sans-serif;
+    color:var(--ink);
+    padding:10px 16px 60px;
+  }
+  .wrap{
+    max-width:640px;
+    margin:0 auto;
+  }
+
+  .hero-eq{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:18px;
+    width:fit-content;
+    margin:0 auto 7px;
+    font-family:"Libre Franklin",sans-serif;
+    font-style:italic;
+    color:var(--ink);
+    background:#f0f1f3;
+    border:1px solid #edeef1;
+    border-radius:10px;
+    padding:2px 16px;
+  }
+  .hero-frac{
+    display:inline-flex;
+    flex-direction:column;
+    align-items:center;
+    line-height:1.15;
+  }
+  .hero-frac .n, .hero-frac .d{
+    font-size:20px;
+    padding:0 6px 2px;
+  }
+  .hero-frac .n{
+    border-bottom:2px solid var(--ink);
+  }
+  .hero-eq-sign{
+    font-size:20px;
+    padding-bottom:4px;
+  }
+
+  .card{
+    background:var(--card);
+    border-radius:var(--radius);
+    box-shadow:0 1px 2px rgba(20,30,50,.04), 0 12px 28px rgba(20,30,50,.07);
+    padding:24px 28px 18px;
+    margin-bottom:10px;
+    overflow:hidden;
+  }
+
+  .title-band{
+    background:linear-gradient(135deg, var(--navy), var(--blue));
+    margin:-24px -28px 7px;
+    padding:7px 28px 6px;
+    border-radius:var(--radius) var(--radius) 0 0;
+  }
+  .title-band h1{
+    color:#ffffff;
+    margin:0 0 4px;
+  }
+  .title-band .subtitle{
+    color:rgba(255,255,255,.85);
+    margin:0;
+  }
+
+  h1{
+    text-align:center;
+    font-size:26px;
+    font-weight:700;
+    color:var(--navy);
+    margin:0 0 4px;
+  }
+  .subtitle{
+    text-align:center;
+    font-size:14.5px;
+    color:var(--ink-soft);
+    margin:0 0 26px;
+  }
+
+  .equation{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:16px;
+    flex-wrap:wrap;
+    margin-bottom:8px;
+  }
+  .fraction{
+    display:flex;
+    flex-direction:column;
+    align-items:stretch;
+    width:220px;
+  }
+  .fraction .slot{
+    position:relative;
+  }
+  .fraction .field-line{
+    display:flex;
+    align-items:stretch;
+    gap:0;
+  }
+  .fraction .action-box{
+    display:flex;
+    align-items:center;
+    gap:2px;
+    background:#f0f1f3;
+    border:1.5px solid #edeef1;
+    border-left:none;
+    border-radius:0 10px 10px 0;
+    padding:0 6px;
+    flex-shrink:0;
+    height:38px;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .fraction .field-row{
+    display:flex;
+    align-items:center;
+    flex:1;
+    min-width:0;
+    background:#f0f1f3;
+    border:1.5px solid #edeef1;
+    border-radius:10px 0 0 10px;
+    padding:0 8px 0 12px;
+    height:38px;
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .fraction .field-row:focus-within{
+    border-color:var(--blue);
+    background:#ffffff;
+  }
+  .fraction .field-row:focus-within + .action-box{
+    border-color:var(--blue);
+  }
+  .fraction .field-row:has(input.locked){
+    background:#f5f5f6;
+  }
+  .fraction .field-row:has(input.locked) + .action-box{
+    background:#f5f5f6;
+    border-color:#edeef1;
+  }
+  .fraction .field-row:has(input.solved){
+    background:var(--solved-bg);
+    border-color:var(--solved-border);
+  }
+  .fraction .field-row:has(input.solved) + .action-box{
+    background:var(--solved-bg);
+    border-color:var(--solved-border);
+  }
+  .fraction .field-row.row-locked{
+    background:#f5f5f6;
+  }
+  .fraction .field-row.row-locked + .action-box{
+    background:#f5f5f6;
+    border-color:#edeef1;
+  }
+  .fraction .field-row.row-solved{
+    background:var(--solved-bg);
+    border-color:var(--solved-border);
+  }
+  .fraction .field-row.row-solved + .action-box{
+    background:var(--solved-bg);
+    border-color:var(--solved-border);
+  }
+  .fraction input{
+    flex:1;
+    min-width:0;
+    text-align:left;
+    font-size:18px;
+    font-weight:600;
+    font-family:inherit;
+    color:var(--ink);
+    border:none;
+    background:transparent;
+    padding:0 4px;
+    height:100%;
+  }
+  .fraction input:focus{
+    outline:none;
+  }
+  .fraction input.solved{
+    color:var(--navy);
+  }
+  /* remove number spinner arrows */
+  .fraction input::-webkit-outer-spin-button,
+  .fraction input::-webkit-inner-spin-button{
+    -webkit-appearance:none;
+    margin:0;
+  }
+  .fraction input[type=number]{
+    -moz-appearance:textfield;
+    appearance:textfield;
+  }
+  .fraction .bar{
+    height:2px;
+    background:var(--ink);
+    margin:10px 0;
+    border-radius:2px;
+  }
+  .iconbtn{
+    flex-shrink:0;
+    border:none;
+    background:transparent;
+    cursor:pointer;
+    padding:0;
+    transition:color .15s ease, transform .1s ease, background .15s ease;
+  }
+  .iconbtn:active{ transform:scale(0.9); }
+  .iconbtn.clear{
+    width:20px;
+    height:20px;
+    font-size:15px;
+    font-weight:400;
+    color:#c1c5cb;
+    line-height:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .iconbtn.clear:hover{ color:var(--bad); }
+  .iconbtn.clear.reset-mode{
+    color:var(--blue);
+  }
+  .iconbtn.clear.reset-mode:hover{
+    color:var(--navy);
+  }
+  .iconbtn.lock{
+    width:26px;
+    height:26px;
+    border-radius:7px;
+    background:transparent;
+    color:#9aa0a8;
+    font-size:13px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .iconbtn.lock:hover{
+    background:#eceff1;
+  }
+  .equals-sign{
+    font-size:28px;
+    font-weight:300;
+    color:var(--navy);
+    line-height:1;
+  }
+
+  .hint{
+    text-align:center;
+    font-size:14.5px;
+    color:var(--ink);
+    margin:14px 0 0;
+    min-height:16px;
+  }
+  .hint b{ color:var(--navy); }
+
+  .actions{
+    display:flex;
+    gap:8px;
+    justify-content:center;
+    flex-wrap:nowrap;
+    margin-top:16px;
+    padding-top:14px;
+    border-top:1px solid var(--line);
+  }
+  .actions button{
+    font-family:inherit;
+    font-size:12.5px;
+    font-weight:600;
+    padding:9px 12px;
+    border-radius:10px;
+    cursor:pointer;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    flex:1 1 0;
+    min-width:0;
+    transition:background .15s ease, color .15s ease, border-color .15s ease;
+  }
+  @media (max-width:480px){
+    .actions{ gap:5px; }
+    .actions button{ font-size:11px; padding:8px 6px; }
+  }
+  .btn-plain{
+    background:#f0f1f3;
+    border:1.5px solid var(--line);
+    color:var(--ink-soft);
+  }
+  .btn-plain:hover{
+    background:var(--blue-soft);
+    border-color:var(--blue);
+    color:var(--blue);
+  }
+
+  /* results card */
+  .results{
+    display:none;
+    padding:18px 28px;
+  }
+  .results.show{ display:block; }
+  .stat-grid{
+    display:flex;
+    align-items:flex-start;
+    justify-content:center;
+    gap:16px;
+    margin-bottom:18px;
+  }
+  .stat-grid:last-child{
+    margin-bottom:0;
+  }
+  .stat-spacer{
+    visibility:hidden;
+    font-size:28px;
+    font-weight:300;
+    line-height:1;
+  }
+  @media (max-width:480px){
+    .stat-grid{ gap:10px; }
+    .stat{ width:170px; }
+    .equation{ gap:10px; }
+    .fraction{ width:170px; }
+  }
+  .stat{
+    display:flex;
+    flex-direction:column;
+    align-items:stretch;
+    width:220px;
+    flex-shrink:0;
+  }
+  .stat-label{
+    display:block;
+    background:#5b8ef0;
+    color:#ffffff;
+    font-size:11.5px;
+    font-weight:700;
+    letter-spacing:.02em;
+    padding:4px 9px;
+    border-radius:10px 10px 0 0;
+    margin-bottom:0;
+    text-align:center;
+  }
+  .stat-box{
+    background:#f0f1f3;
+    border:1.5px solid #edeef1;
+    border-radius:0 0 10px 10px;
+    padding:0 12px;
+    height:38px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .stat-box .v{
+    font-size:16.5px;
+    font-weight:700;
+    color:var(--navy);
+    text-align:center;
+  }
+  .stat-box .v small{
+    display:block;
+    font-size:11.5px;
+    font-weight:500;
+    color:var(--ink-soft);
+    margin-top:2px;
+  }
+  /* table of contents */
+  .toc-card{
+    display:none;
+    padding:10px 8px;
+  }
+  .toc-card.open{ display:block; }
+  .toc-item{
+    position:relative;
+  }
+  .toc-item:not(:last-child)::after{
+    content:'';
+    position:absolute;
+    left:10px;
+    right:10px;
+    bottom:0;
+    height:1px;
+    background:var(--line);
+  }
+  .toc-head{
+    width:100%;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:10px;
+    background:none;
+    border:none;
+    font-family:inherit;
+    font-size:16.5px;
+    font-weight:600;
+    color:var(--navy);
+    text-align:left;
+    padding:14px 12px;
+    cursor:pointer;
+  }
+  .toc-item:first-child .toc-head{
+    padding-top:8px;
+  }
+  .toc-item.open .toc-head{
+    background:#f0f1f3;
+    border-radius:10px;
+  }
+  .toc-head .chev{
+    color:var(--ink-soft);
+    font-size:12px;
+    transition:transform .18s ease;
+    flex-shrink:0;
+  }
+  .toc-item.open .toc-head .chev{ transform:rotate(180deg); }
+  .toc-body{
+    display:none;
+    padding:0 12px 16px;
+    font-size:15.5px;
+    line-height:1.55;
+    color:var(--ink-soft);
+  }
+  .toc-item.open .toc-body{ display:block; }
+
+  .mini-eq{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:10px;
+    margin:8px 0;
+    font-size:17px;
+    font-weight:600;
+    color:var(--navy);
+  }
+  .mini-frac{
+    display:inline-flex;
+    flex-direction:column;
+    align-items:center;
+    line-height:1.2;
+  }
+  .mini-frac .num, .mini-frac .denom{
+    padding:1px 4px;
+  }
+  .mini-frac .num{ border-bottom:1.5px solid var(--navy); }
+  .toc-figure{
+    text-align:center;
+    margin:14px 0;
+  }
+  .toc-figure img{
+    max-width:220px;
+    width:100%;
+    height:auto;
+  }
+  .toc-figure figcaption{
+    font-size:11px;
+    color:var(--ink-soft);
+    margin-top:6px;
+  }
+  .toc-figure figcaption a{ color:var(--blue); }
+
+  .steps-content{
+    padding:8px 18px 2px;
+  }
+  .steps-content ol{
+    margin:0;
+    padding-left:20px;
+  }
+  .steps-content li{
+    font-size:15.5px;
+    line-height:1.4;
+    color:var(--ink-soft);
+    margin-bottom:8px;
+  }
+  .steps-content li:last-child{
+    margin-bottom:0;
+  }
+  .steps-content li b{ color:var(--navy); }
+  .steps-content .note{
+    font-size:14.5px;
+    color:var(--ink-soft);
+    text-align:center;
+    margin:0 0 8px;
+    padding-top:8px;
+  }
+
+  footer{
+    text-align:center;
+    font-size:12px;
+    color:var(--ink-soft);
+    margin-top:6px;
+  }
+  footer a{ color:var(--blue); text-decoration:none; }
+
+  .toast{
+    position:fixed;
+    bottom:26px;
+    left:50%;
+    transform:translateX(-50%) translateY(20px);
+    background:var(--navy);
+    color:#fff;
+    padding:10px 20px;
+    border-radius:24px;
+    font-size:13px;
+    font-weight:600;
+    opacity:0;
+    pointer-events:none;
+    transition:opacity .2s ease, transform .2s ease;
+  }
+  .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="card">
+    <div class="title-band">
+      <h1>Proportion Calculator</h1>
+      <p class="subtitle">Enter any three values — the fourth solves itself.</p>
+    </div>
+
+    <div class="hero-eq">
+      <span class="hero-frac"><span class="n">a</span><span class="d">b</span></span>
+      <span class="hero-eq-sign">=</span>
+      <span class="hero-frac"><span class="n">c</span><span class="d">d</span></span>
+    </div>
+
+    <div class="equation">
+      <div class="fraction">
+        <div class="field-line">
+          <div class="field-row">
+            <input type="text" inputmode="decimal" id="A" placeholder="0.00" oninput="autoSolve('A')" onfocus="this.select()" onblur="formatOnBlur('A')" tabindex="1">
+          </div>
+          <div class="action-box">
+            <button class="iconbtn clear" id="clearA" onclick="handleClearOrReset('A')" title="Clear a" tabindex="-1">✕</button>
+            <button class="iconbtn lock" id="lockA" onclick="toggleLock('A')" title="Lock/unlock a" tabindex="-1">🔓</button>
+          </div>
+        </div>
+        <div class="bar"></div>
+        <div class="field-line">
+          <div class="field-row">
+            <input type="text" inputmode="decimal" id="B" placeholder="0.00" oninput="autoSolve('B')" onfocus="this.select()" onblur="formatOnBlur('B')" tabindex="2">
+          </div>
+          <div class="action-box">
+            <button class="iconbtn clear" id="clearB" onclick="handleClearOrReset('B')" title="Clear b" tabindex="-1">✕</button>
+            <button class="iconbtn lock" id="lockB" onclick="toggleLock('B')" title="Lock/unlock b" tabindex="-1">🔓</button>
+          </div>
+        </div>
+      </div>
+      <div class="equals-sign">=</div>
+      <div class="fraction">
+        <div class="field-line">
+          <div class="field-row">
+            <input type="text" inputmode="decimal" id="C" placeholder="0.00" oninput="autoSolve('C')" onfocus="this.select()" onblur="formatOnBlur('C')" tabindex="3">
+          </div>
+          <div class="action-box">
+            <button class="iconbtn clear" id="clearC" onclick="handleClearOrReset('C')" title="Clear c" tabindex="-1">✕</button>
+            <button class="iconbtn lock" id="lockC" onclick="toggleLock('C')" title="Lock/unlock c" tabindex="-1">🔓</button>
+          </div>
+        </div>
+        <div class="bar"></div>
+        <div class="field-line">
+          <div class="field-row">
+            <input type="text" inputmode="decimal" id="D" placeholder="0.00" oninput="autoSolve('D')" onfocus="this.select()" onblur="formatOnBlur('D')" tabindex="4">
+          </div>
+          <div class="action-box">
+            <button class="iconbtn clear" id="clearD" onclick="handleClearOrReset('D')" title="Clear d" tabindex="-1">✕</button>
+            <button class="iconbtn lock" id="lockD" onclick="toggleLock('D')" title="Lock/unlock d" tabindex="-1">🔓</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="hint" id="hintLine"><i>Fill in <b>a</b>, <b>b</b>, <b>c</b>, or <b>d</b>.</i></p>
+
+    <div class="actions">
+      <button class="btn-plain" id="tocBtn" onclick="toggleToc()">☰ Contents</button>
+      <button class="btn-plain" id="stepsBtn" onclick="toggleSteps()">🧮 Steps</button>
+      <button class="btn-plain" onclick="copyResult()">Share</button>
+      <button class="btn-plain" onclick="clearAll()">Clear</button>
+    </div>
+  </div>
+
+  <div class="card toc-card" id="stepsCard">
+    <div class="steps-content" id="stepsContent"></div>
+  </div>
+
+  <div class="card toc-card" id="tocCard">
+    <div class="toc-item" data-idx="0">
+      <button class="toc-head" onclick="toggleTocItem(0)">
+        <span>Equations and Definitions for Proportional Relationships</span><span class="chev">▾</span>
+      </button>
+      <div class="toc-body">
+        <b>Constant of Proportionality (p):</b> a unit ratio that relates one variable's value to another variable.
+        <br><br>
+        <b>Constant of Proportionality Formula:</b>
+        <div class="mini-eq">
+          <span>p =</span>
+          <span class="mini-frac"><span class="num">y</span><span class="denom">x</span></span>
+        </div>
+        where y is the dependent variable and x is the independent variable.
+        <br><br>
+        <b>Proportional Relationship Equation:</b>
+        <div class="mini-eq"><span>y = px</span></div>
+      </div>
+    </div>
+    <div class="toc-item" data-idx="1">
+      <button class="toc-head" onclick="toggleTocItem(1)">
+        <span>What Is a Proportion? – Proportion Definition</span><span class="chev">▾</span>
+      </button>
+      <div class="toc-body">
+        A proportion describes how one quantity relates to a whole. It's most often shown as a fraction, though the same idea can be written with a colon, as a decimal, or as a percent.
+        <br><br>
+        Like any fraction, a proportion has two parts: a numerator on top and a denominator on the bottom.
+        <br><br>
+        Picture a cake sliced into 12 pieces. If 5 get eaten (by that same uncle), 7 remain — so the proportion of cake left is:
+        <div class="mini-eq">
+          <span class="mini-frac"><span class="num">7</span><span class="denom">12</span></span>
+        </div>
+        That same relationship could be written as 7:12, though this calculator only works with the fraction form.
+      </div>
+    </div>
+    <div class="toc-item" data-idx="2">
+      <button class="toc-head" onclick="toggleTocItem(2)">
+        <span>How to Solve Proportions – Proportion Examples</span><span class="chev">▾</span>
+      </button>
+      <div class="toc-body">
+        Solving a proportion follows a simple routine: set up both fractions with the unknown labeled, place an equals sign between them, cross-multiply to isolate the variable, then solve. Scaling 7/12 up to a denominator of 96 looks like:
+        <div class="mini-eq">
+          <span class="mini-frac"><span class="num">7</span><span class="denom">12</span></span>
+          <span>=</span>
+          <span class="mini-frac"><span class="num">x</span><span class="denom">96</span></span>
+        </div>
+        <div class="mini-eq"><span>12x = 96 × 7 = 672 → x = 56</span></div>
+        This calculator handles that cross-multiplication automatically, which helps most with larger or decimal-heavy numbers.
+      </div>
+    </div>
+    <div class="toc-item" data-idx="3">
+      <button class="toc-head" onclick="toggleTocItem(3)">
+        <span>The Golden Ratio</span><span class="chev">▾</span>
+      </button>
+      <div class="toc-body">
+        The golden ratio is a special proportion where the whole compared to its larger part matches the larger part compared to the smaller part, producing the famous value of roughly 1.618:
+        <div class="mini-eq">
+          <span class="mini-frac"><span class="num">a + b</span><span class="denom">a</span></span>
+          <span>=</span>
+          <span class="mini-frac"><span class="num">a</span><span class="denom">b</span></span>
+        </div>
+        <figure class="toc-figure">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/8/8e/SimilarGoldenRectangles.svg" alt="Nested golden rectangles illustrating the golden ratio" loading="lazy">
+          <figcaption>Nested golden rectangles — <a href="https://commons.wikimedia.org/wiki/File:SimilarGoldenRectangles.svg" target="_blank" rel="noopener">Wikimedia Commons</a></figcaption>
+        </figure>
+        It shows up in architecture, geometry, and golden rectangles, and it's connected to the ratio of consecutive Fibonacci numbers.
+      </div>
+    </div>
+    <div class="toc-item" data-idx="4">
+      <button class="toc-head" onclick="toggleTocItem(4)">
+        <span>Law of Multiple Proportions – Proportional Relationships in Chemistry</span><span class="chev">▾</span>
+      </button>
+      <div class="toc-body">
+        This chemistry principle, credited to John Dalton, holds that the masses of elements combining in a compound reduce to small whole-number ratios. For sulfuric acid (H₂SO₄), the hydrogen-to-oxygen-to-sulfur mass ratio simplifies down from 2/64/32 to:
+        <div class="mini-eq"><span>H / O / S = 1 / 32 / 16</span></div>
+        That's useful for figuring out how much of each element a reaction needs.
+      </div>
+    </div>
+    <div class="toc-item" data-idx="5">
+      <button class="toc-head" onclick="toggleTocItem(5)">
+        <span>Directly Proportional Tax Definition</span><span class="chev">▾</span>
+      </button>
+      <div class="toc-body">
+        A directly proportional (flat) tax charges everyone the same percentage of income no matter how much they earn:
+        <div class="mini-eq"><span>$15,000 × 15% = $2,250</span></div>
+        <div class="mini-eq"><span>$125,000 × 15% = $18,750</span></div>
+        Both taxpayers pay a different dollar amount but the same 15% share of income. This differs from a progressive tax, where the rate itself climbs as income rises.
+      </div>
+    </div>
+  </div>
+
+  <div class="card results" id="results">
+    <div class="stat-grid">
+      <div class="stat"><div class="stat-label">RATIO a : b</div><div class="stat-box"><div class="v" id="ratioAB">—</div></div></div>
+      <div class="stat-spacer">=</div>
+      <div class="stat"><div class="stat-label">RATIO c : d</div><div class="stat-box"><div class="v" id="ratioCD">—</div></div></div>
+    </div>
+    <div class="stat-grid">
+      <div class="stat"><div class="stat-label">FRACTION a/b</div><div class="stat-box"><div class="v" id="fracAB">—</div></div></div>
+      <div class="stat-spacer">=</div>
+      <div class="stat"><div class="stat-label">FRACTION c/d</div><div class="stat-box"><div class="v" id="fracCD">—</div></div></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast">Copied to clipboard!</div>
+
+<script>
+function toggleToc(){
+  const card = document.getElementById('tocCard');
+  const btn = document.getElementById('tocBtn');
+  const open = card.classList.toggle('open');
+  btn.textContent = open ? '✕ Contents' : '☰ Contents';
+}
+
+function toggleSteps(){
+  const card = document.getElementById('stepsCard');
+  const btn = document.getElementById('stepsBtn');
+  const open = card.classList.toggle('open');
+  btn.textContent = open ? '✕ Steps' : '🧮 Steps';
+  if(open) renderSteps();
+}
+
+function renderSteps(){
+  const content = document.getElementById('stepsContent');
+  if(!content) return;
+
+  const raw = {};
+  ids.forEach(id => {
+    const v = document.getElementById(id).value.trim().replace(/,/g, '');
+    raw[id] = v === '' ? null : parseFloat(v);
+  });
+  const filled = ids.filter(id => raw[id] !== null);
+
+  // need exactly 3 (or 4) filled fields with one clearly solved to show worked steps
+  const solvedField = ids.find(id => document.getElementById(id).classList.contains('solved'));
+
+  if(filled.length < 3 || !solvedField){
+    content.innerHTML = `
+      <ol>
+        <li><b>Set up the proportion</b> with the unknown labeled:
+          <div class="mini-eq">
+            <span class="mini-frac"><span class="num">a</span><span class="denom">b</span></span>
+            <span>=</span>
+            <span class="mini-frac"><span class="num">c</span><span class="denom">d</span></span>
+          </div>
+        </li>
+        <li><b>Cross-multiply</b> the two sides:
+          <div class="mini-eq"><span>a × d = b × c</span></div>
+        </li>
+        <li><b>Solve</b> the resulting equation for the missing letter.</li>
+        <li><b>Check</b> the answer by substituting it back into the original proportion.</li>
+      </ol>
+      <p class="note"><i>Fill in any three fields above to see these steps worked out with your numbers.</i></p>
+    `;
+    return;
+  }
+
+  const solved = solvedField;
+  const A = raw.A, B = raw.B, C = raw.C, D = raw.D;
+
+  const left = A*D, right = B*C;
+  const closeMatch = Math.abs(left-right) < 1e-6;
+  const avgMag = (Math.abs(left) + Math.abs(right)) / 2 || 1;
+  const relDiff = Math.abs(left-right) / avgMag;
+  const isRoundingError = !closeMatch && relDiff < 0.001;
+
+  let crossStep, solveStep;
+  if(solved === 'D'){
+    crossStep = `${fmt(A)} × d = ${fmt(B)} × ${fmt(C)}`;
+    solveStep = `${fmt(A)}d = ${fmt(B*C)}  →  d = ${fmt(D)}`;
+  } else if(solved === 'C'){
+    crossStep = `${fmt(A)} × ${fmt(D)} = ${fmt(B)} × c`;
+    solveStep = `${fmt(B)}c = ${fmt(A*D)}  →  c = ${fmt(C)}`;
+  } else if(solved === 'B'){
+    crossStep = `${fmt(A)} × ${fmt(D)} = b × ${fmt(C)}`;
+    solveStep = `${fmt(C)}b = ${fmt(A*D)}  →  b = ${fmt(B)}`;
+  } else {
+    crossStep = `a × ${fmt(D)} = ${fmt(B)} × ${fmt(C)}`;
+    solveStep = `${fmt(D)}a = ${fmt(B*C)}  →  a = ${fmt(A)}`;
+  }
+
+  content.innerHTML = `
+    <ol>
+      <li><b>Set up the proportion</b> with the unknown labeled:
+        <div class="mini-eq">
+          <span class="mini-frac"><span class="num">${solved==='A' ? 'a' : fmt(A)}</span><span class="denom">${solved==='B' ? 'b' : fmt(B)}</span></span>
+          <span>=</span>
+          <span class="mini-frac"><span class="num">${solved==='C' ? 'c' : fmt(C)}</span><span class="denom">${solved==='D' ? 'd' : fmt(D)}</span></span>
+        </div>
+      </li>
+      <li><b>Cross-multiply</b> the two sides:
+        <div class="mini-eq"><span>${crossStep}</span></div>
+      </li>
+      <li><b>Solve</b> for the missing letter:
+        <div class="mini-eq"><span>${solveStep}</span></div>
+      </li>
+      <li><b>Check</b> the solution:
+        <div class="mini-eq"><span>a·d = ${fmt(left)}   b·c = ${fmt(right)}   <span style="color:${closeMatch ? 'var(--good)' : 'var(--bad)'}">${closeMatch ? '✓ correct' : isRoundingError ? '✗ incorrect (rounding error)' : '✗ incorrect'}</span></span></div>
+      </li>
+    </ol>
+  `;
+}
+
+function toggleTocItem(idx){
+  const item = document.querySelector(`.toc-item[data-idx="${idx}"]`);
+  item.classList.toggle('open');
+}
+
+function openTocItem(idx){
+  const item = document.querySelector(`.toc-item[data-idx="${idx}"]`);
+  if(!item) return;
+  item.classList.add('open');
+  item.scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+const ids = ['A','B','C','D'];
+let lockedSet = new Set();
+let suppressed = new Set();
+let editCounter = 0;
+let lastEdited = {A:0, B:0, C:0, D:0};
+let lastCopyText = '';
+
+function touch(id){
+  lastEdited[id] = ++editCounter;
+}
+
+function getAutoTarget(){
+  const tieBreakOrder = ['D','C','B','A'];
+  let best = null;
+  tieBreakOrder.forEach(id => {
+    if(lockedSet.has(id)) return;
+    if(best === null || lastEdited[id] < lastEdited[best]) best = id;
+  });
+  return best;
+}
+
+function syncRow(id){
+  const input = document.getElementById(id);
+  const row = input.closest('.field-row');
+  if(!row) return;
+  row.classList.toggle('row-locked', input.classList.contains('locked'));
+  row.classList.toggle('row-solved', input.classList.contains('solved'));
+}
+
+const originalTabIndex = {A:1, B:2, C:3, D:4};
+
+function toggleLock(id){
+  const lockBtn = document.getElementById('lock'+id);
+  const input = document.getElementById(id);
+  if(lockedSet.has(id)){
+    lockedSet.delete(id);
+    lockBtn.textContent = '🔓';
+    input.classList.remove('locked');
+    input.readOnly = false;
+    input.tabIndex = originalTabIndex[id];
+  } else {
+    lockedSet.add(id);
+    lockBtn.textContent = '🔒';
+    input.classList.add('locked');
+    input.readOnly = true;
+    input.tabIndex = -1;
+  }
+  syncRow(id);
+  autoSolve();
+}
+
+function clearField(id){
+  const input = document.getElementById(id);
+  input.value = '';
+  input.classList.remove('solved');
+  // this field was explicitly cleared — keep it blank and waiting,
+  // even if it's the only empty field left
+  suppressed.add(id);
+  syncRow(id);
+  autoSolve();
+}
+
+function resetField(id){
+  const input = document.getElementById(id);
+  input.classList.remove('solved');
+  suppressed.delete(id);
+  // force this field to become the auto-solve target and recompute right away
+  lastEdited[id] = -(++editCounter);
+  syncRow(id);
+  autoSolve();
+}
+
+function handleClearOrReset(id){
+  const input = document.getElementById(id);
+  if(input.value.trim() === ''){
+    resetField(id);
+  } else {
+    clearField(id);
+  }
+}
+
+function gcd(a,b){
+  a = Math.abs(a); b = Math.abs(b);
+  while(b){ [a,b] = [b, a % b]; }
+  return a || 1;
+}
+
+function simplifyRatio(x, y){
+  if(!isFinite(x) || !isFinite(y)) return null;
+  const decimals = (n)=>{
+    const s = n.toString();
+    const i = s.indexOf('.');
+    return i === -1 ? 0 : s.length - i - 1;
+  };
+  const scale = Math.pow(10, Math.max(decimals(x), decimals(y)));
+  let xi = Math.round(x*scale);
+  let yi = Math.round(y*scale);
+  if(yi === 0) return null;
+  const g = gcd(xi, yi);
+  xi = xi/g; yi = yi/g;
+  if(yi < 0){ xi = -xi; yi = -yi; }
+  return {num:xi, den:yi};
+}
+
+function formatOnBlur(id){
+  const input = document.getElementById(id);
+  const raw = input.value.trim().replace(/,/g, '');
+  if(raw === '') return;
+  const n = parseFloat(raw);
+  if(!isFinite(n)) return;
+  input.value = fmt(n);
+}
+
+function fmt(n){
+  if(!isFinite(n)) return '—';
+  const rounded = Math.round(n * 1e3) / 1e3;
+  const parts = rounded.toString().split('.');
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  return parts.join('.');
+}
+
+function fmtNoZero(n){
+  let s = fmt(n);
+  if(s.startsWith('0.')) s = s.slice(1);
+  else if(s.startsWith('-0.')) s = '-' + s.slice(2);
+  return s;
+}
+
+function clearAll(){
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    el.value = '';
+    el.classList.remove('solved');
+    syncRow(id);
+  });
+  editCounter = 0;
+  lastEdited = {A:0, B:0, C:0, D:0};
+  suppressed.clear();
+  document.getElementById('results').classList.remove('show');
+  const hintLine = document.getElementById('hintLine');
+  hintLine.style.color = '';
+  hintLine.innerHTML = '<i>Fill in <b>a</b>, <b>b</b>, <b>c</b>, or <b>d</b>.</i>';
+  lastCopyText = '';
+  if(document.getElementById('stepsCard').classList.contains('open')) renderSteps();
+}
+
+function updateClearIcon(id){
+  const input = document.getElementById(id);
+  const btn = document.getElementById('clear'+id);
+  if(!input || !btn) return;
+  const isEmpty = input.value.trim() === '';
+  btn.textContent = isEmpty ? '↻' : '✕';
+  btn.title = isEmpty ? `Reset ${id.toLowerCase()}` : `Clear ${id.toLowerCase()}`;
+  btn.classList.toggle('reset-mode', isEmpty);
+}
+
+function autoSolve(changedId){
+  doSolve(changedId);
+  ids.forEach(id => updateClearIcon(id));
+}
+
+function joinWithOr(words){
+  if(words.length === 1) return words[0];
+  if(words.length === 2) return `${words[0]} or ${words[1]}`;
+  return `${words.slice(0,-1).join(', ')}, or ${words[words.length-1]}`;
+}
+
+function doSolve(changedId){
+  if(changedId){
+    if(suppressed.has(changedId)){
+      suppressed.delete(changedId);
+    } else {
+      // editing a different field is a signal to let any suppressed field resolve again
+      suppressed.clear();
+    }
+    touch(changedId);
+  }
+
+  const raw = {};
+  ids.forEach(id => {
+    const v = document.getElementById(id).value.trim().replace(/,/g, '');
+    raw[id] = v === '' ? null : parseFloat(v);
+  });
+
+  const results = document.getElementById('results');
+  const hintLine = document.getElementById('hintLine');
+  hintLine.style.color = '';
+  const totalEmpty = ids.filter(id => raw[id] === null);
+  const allLocked = ids.every(id => lockedSet.has(id));
+
+  const clearSolvedExcept = (keepId) => {
+    ids.forEach(id => {
+      if(id !== keepId) document.getElementById(id).classList.remove('solved');
+      syncRow(id);
+    });
+  };
+
+  if(allLocked){
+    clearSolvedExcept(null);
+    results.classList.remove('show');
+    if(totalEmpty.length === 0){
+      hintLine.innerHTML = 'All fields are locked.';
+      showBreakdown(raw.A, raw.B, raw.C, raw.D, null);
+    } else {
+      hintLine.innerHTML = 'All fields are locked — unlock one to solve.';
+    }
+    if(document.getElementById('stepsCard').classList.contains('open')) renderSteps();
+    return;
+  }
+
+  // two or more fields empty — no way to solve yet, list everything still needed
+  if(totalEmpty.length > 1){
+    clearSolvedExcept(null);
+    results.classList.remove('show');
+    const names = totalEmpty.map(id => id.toLowerCase());
+    hintLine.innerHTML = `<i>Fill in ${joinWithOr(names.map(n => `<b>${n}</b>`))}.</i>`;
+    if(document.getElementById('stepsCard').classList.contains('open')) renderSteps();
+    return;
+  }
+
+  // exactly one field empty — that's unambiguously the one to solve for
+  let target;
+  if(totalEmpty.length === 1){
+    target = totalEmpty[0];
+    if(suppressed.has(target)){
+      clearSolvedExcept(null);
+      results.classList.remove('show');
+      hintLine.innerHTML = `Reset to solve <b>${target.toLowerCase()}</b>.`;
+      if(document.getElementById('stepsCard').classList.contains('open')) renderSteps();
+      return;
+    }
+    if(lockedSet.has(target)){
+      clearSolvedExcept(null);
+      results.classList.remove('show');
+      hintLine.innerHTML = `<b>${target.toLowerCase()}</b> is locked — enter a value or unlock it to solve.`;
+      if(document.getElementById('stepsCard').classList.contains('open')) renderSteps();
+      return;
+    }
+  } else {
+    // all four already filled — recompute whichever unlocked field was edited longest ago
+    target = getAutoTarget();
+  }
+
+  clearSolvedExcept(target);
+
+  let A = raw.A, B = raw.B, C = raw.C, D = raw.D;
+  let error = null;
+  try{
+    if(target === 'A'){ if(D === 0) throw 'd can\u2019t be 0.'; A = (B*C)/D; }
+    else if(target === 'B'){ if(C === 0) throw 'c can\u2019t be 0.'; B = (A*D)/C; }
+    else if(target === 'C'){ if(B === 0) throw 'b can\u2019t be 0.'; C = (A*D)/B; }
+    else if(target === 'D'){ if(A === 0) throw 'a can\u2019t be 0.'; D = (B*C)/A; }
+  } catch(e){ error = e; }
+
+  if(error){
+    hintLine.innerHTML = `<span style="color:#d64545"><b>${error.charAt(0)}</b>${error.slice(1)}</span>`;
+    results.classList.remove('show');
+    if(document.getElementById('stepsCard').classList.contains('open')) renderSteps();
+    return;
+  }
+
+  const solvedVal = {A,B,C,D}[target];
+  const el = document.getElementById(target);
+  el.value = fmt(solvedVal);
+  el.classList.add('solved');
+  syncRow(target);
+
+  const left = A*D, right = B*C;
+  const close = Math.abs(left-right) < 1e-6;
+  hintLine.innerHTML = close
+    ? `a·d = ${fmt(left)}  and  b·c = ${fmt(right)}  →  proportion correct ✓`
+    : `a·d = ${fmt(left)}  and  b·c = ${fmt(right)}  →  does not match ✗`;
+  hintLine.style.color = close ? 'var(--good)' : 'var(--bad)';
+
+  showBreakdown(A,B,C,D, target);
+  if(document.getElementById('stepsCard').classList.contains('open')) renderSteps();
+}
+
+function showBreakdown(A,B,C,D, target){
+  const results = document.getElementById('results');
+  results.classList.add('show');
+
+  const round2 = (n) => Math.round(n * 100) / 100;
+  const A2 = round2(A), B2 = round2(B), C2 = round2(C), D2 = round2(D);
+
+  const rAB = simplifyRatio(A2,B2);
+  const rCD = simplifyRatio(C2,D2);
+  document.getElementById('ratioAB').innerHTML = rAB ? `${rAB.num} : ${rAB.den}` : '—';
+  document.getElementById('ratioCD').innerHTML = rCD ? `${rCD.num} : ${rCD.den}` : '—';
+  document.getElementById('fracAB').innerHTML = rAB ? `${rAB.num}/${rAB.den} = ${fmtNoZero(rAB.num/rAB.den)}` : '—';
+  document.getElementById('fracCD').innerHTML = rCD ? `${rCD.num}/${rCD.den} = ${fmtNoZero(rCD.num/rCD.den)}` : '—';
+
+  lastCopyText = `a/b = c/d  →  a=${fmt(A)}, b=${fmt(B)}, c=${fmt(C)}, d=${fmt(D)}` + (target ? `  (solved ${target.toLowerCase()})` : '');
+}
+
+function copyResult(){
+  if(!lastCopyText){
+    document.getElementById('hintLine').innerHTML = 'Fill in <b>three</b> fields first so there\u2019s a result to share.';
+    return;
+  }
+  navigator.clipboard?.writeText(lastCopyText).then(showToast).catch(showToast);
+}
+
+function showToast(){
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(()=> t.classList.remove('show'), 1400);
+}
+
+function trapTab(container, focusableSelector){
+  if(!container) return;
+  container.addEventListener('keydown', function(e){
+    if(e.key !== 'Tab') return;
+    const focusables = Array.from(container.querySelectorAll(focusableSelector))
+      .filter(el => el.offsetParent !== null && el.tabIndex !== -1); // only visible, tabbable elements
+    if(focusables.length === 0) return;
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    if(e.shiftKey){
+      if(document.activeElement === first){
+        e.preventDefault();
+        last.focus();
+      }
+    } else {
+      if(document.activeElement === last){
+        e.preventDefault();
+        first.focus();
+      }
+    }
+  });
+}
+
+trapTab(document.querySelector('.equation'), 'input[tabindex]');
+trapTab(document.getElementById('tocCard'), '.toc-head');
+
+autoSolve();
+</script>
+</body>
+</html>
